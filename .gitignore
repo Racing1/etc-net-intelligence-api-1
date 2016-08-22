@@ -8,3 +8,5 @@ config.js
 *.swp
 *.pem
 .node-xmlhttprequest-*
+.idea
+.vagrant

@@ -1,13 +1,13 @@
 language: node_js
 node_js:
-  - "0.12"
+- '0.12'
 env:
   global:
-    - secure: Qdkmi13nqcXskABBhbuGZmRakh4orOW1dalkSCyUbzGuYf0OdYF8ttNVuJa0WSWI4KhNXhtz2p3I8dM95wL++LCVqXFmIvZtX8Nca36KlNxIPNXPjn0odayh+c4pgrhrbz8TDmDXl9IPuZmNz8HHtN7xmIn6YDcm13wA3gTmfwo=
-    - RPC_HOST=localhost
-    - RPC_PORT=8545
-    - LISTENING_PORT=30303
-    - INSTANCE_NAME="Travis Node"
-    - CONTACT_DETAILS="marian@ethdev.com"
-    - WS_SERVER="wss://rpc.ethstats.net"
-    - NODE_ENV="production"
+  - secure: AG5HfslrNNo2lesjbELSYFwLYM+yj3ULt1noGy4jcwIEodvxueDvTDMMnsOYEZyHFGwLjjlJZZcwSUlzwDHCKjGb/46ojFSslv4JccnqFx5seh40gQUA6+JoeKPR9LfCrMYorDKM8vAa/DWdCLD1iTGF9sPo5LldJHXyjyniCTOalEOgM7VSbTxw9SO/qZ5nyC8r+E7/HeI5Ozz3YiTz0uPdBVEk0mmF3zgOfMv5ULirBuxIZ/gBltZ2X7bjl8TUW3YkYdC7IQ3Q+u/eEoTPsSzRMr6FnBcNDHJ/m/dr5cr/fQRJlNrhg1Ry2Z5WdEKxf14tYJS6W6rCw/7aepXL7n7sIqmvCsHmTPdMg3n/aSB4qvgRaQyl1r80HyNTbTMRQIakyZzSvndTZTzxSpzwu1/wsO1JXMWj0EUmSIdb2y3aOUxKUe9veQ/7uJMihSDV/E5zq7x4D+vaOkOEQzHH7LTPRsNjMTOfuBzrST5FzICXNQJblViFen6mx/Uxo2Fd8idzIaabdpuEDHYNhj1WtwYeUbx+FQSvADeftJurhiN9ihkFV3R3kKk0xgamBc7YB+toxIaEMSgr6OjPyvFC60hdgFD8AvkTjFYyspp0m9SpV9WHpm+cxnbebebI0hfsiQRUQKP/M7MzKi8dWh6KZg0mf8xYgLm19rPR2CfrV0Y=
+  - RPC_HOST=localhost
+  - RPC_PORT=8545
+  - LISTENING_PORT=30303
+  - INSTANCE_NAME="Travis Node"
+  - CONTACT_DETAILS="mikeyb@users.noreply.github.com"
+  - WS_SERVER="wss://rpc.etcstat.us"
+  - NODE_ENV="production"
