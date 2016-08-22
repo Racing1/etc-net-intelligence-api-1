@@ -1,31 +1,31 @@
-## Dockerfile for eth-net-intelligence-api (build from git).
+## Dockerfile for etc-net-intelligence-api (build from git).
 ##
 ## Build via:
 #
-# `docker build -t ethnetintel:latest .`
+# `docker build -t etcstatusintel:latest .`
 #
 ## Run via:
 #
-# `docker run -v <path to app.json>:/home/ethnetintel/eth-net-intelligence-api/app.json ethnetintel:latest`
+# `docker run -v <path to app.json>:/home/etcstatusintel/etc-net-intelligence-api/app.json etcstatusintel:latest`
 #
 ## Make sure, to mount your configured 'app.json' into the container at
-## '/home/ethnetintel/eth-net-intelligence-api/app.json', e.g.
-## '-v /path/to/app.json:/home/ethnetintel/eth-net-intelligence-api/app.json'
+## '/home/etcstatusintel/etc-net-intelligence-api/app.json', e.g.
+## '-v /path/to/app.json:/home/etcstatusintel/etc-net-intelligence-api/app.json'
 ## 
 ## Note: if you actually want to monitor a client, you'll need to make sure it can be reached from this container.
 ##       The best way in my opinion is to start this container with all client '-p' port settings and then 
-#        share its network with the client. This way you can redeploy the client at will and just leave 'ethnetintel' running. E.g. with
+#        share its network with the client. This way you can redeploy the client at will and just leave 'etcstatusintel' running. E.g. with
 ##       the python client 'pyethapp':
 ##
 #
-# `docker run -d --name ethnetintel \
-# -v /home/user/app.json:/home/ethnetintel/eth-net-intelligence-api/app.json \
+# `docker run -d --name etcstatusintel \
+# -v /home/user/app.json:/home/etcstatusintel/etc-net-intelligence-api/app.json \
 # -p 0.0.0.0:30303:30303 \
 # -p 0.0.0.0:30303:30303/udp \
-# ethnetintel:latest`
+# etcstatusintel:latest`
 #
 # `docker run -d --name pyethapp \
-# --net=container:ethnetintel \
+# --net=container:etcstatusintel \
 # -v /path/to/data:/data \
 # pyethapp:latest`
 #
@@ -43,19 +43,19 @@ RUN apt-get update &&\
 RUN apt-get update &&\
     apt-get install -y build-essential
 
-RUN adduser ethnetintel
+RUN adduser etcstatusintel
 
-RUN cd /home/ethnetintel &&\
-    git clone https://github.com/cubedro/eth-net-intelligence-api &&\
-    cd eth-net-intelligence-api &&\
+RUN cd /home/etcstatusintel &&\
+    git clone https://github.com/mikeyb/etc-net-intelligence-api &&\
+    cd etc-net-intelligence-api &&\
     npm install &&\
     npm install -g pm2
 
-RUN echo '#!/bin/bash\nset -e\n\ncd /home/ethnetintel/eth-net-intelligence-api\n/usr/bin/pm2 start ./app.json\ntail -f \
-    /home/ethnetintel/.pm2/logs/node-app-out-0.log' > /home/ethnetintel/startscript.sh
+RUN echo '#!/bin/bash\nset -e\n\ncd /home/etcstatusintel/etc-net-intelligence-api\n/usr/bin/pm2 start ./app.json\ntail -f \
+    /home/etcstatusintel/.pm2/logs/node-app-out-0.log' > /home/etcstatusintel/startscript.sh
 
-RUN chmod +x /home/ethnetintel/startscript.sh &&\
-    chown -R ethnetintel. /home/ethnetintel
+RUN chmod +x /home/etcstatusintel/startscript.sh &&\
+    chown -R etcstatusintel. /home/etcstatusintel
 
-USER ethnetintel
-ENTRYPOINT ["/home/ethnetintel/startscript.sh"]
+USER etcstatusintel
+ENTRYPOINT ["/home/etcstatusintel/startscript.sh"]

@@ -1,67 +1,131 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# check if we are in vagrant vm
+# is_vagrant_vm file created in Vagrantfile before processing shell commands
+
+[ -e "/etc/is_vagrant_vm" ] && \
+    IS_VAGRANT=TRUE && \
+    HOME_PATH=/home/vagrant && \
+    HOME_USER='vagrant'
+
+# check if we are in ec2 instance
+
+[ `curl -s http://instance-data.ec2.internal` ] && \
+    IS_EC2=TRUE && \
+    HOME_PATH=/home/ubuntu && \
+    HOME_USER='ubuntu'
+
+# if not vagrant or ec2
+
+[ ! $HOME_PATH ] && HOME_PATH=`cd && pwd`
+
 
 # setup colors
+
 red=`tput setaf 1`
+
 green=`tput setaf 2`
+
 cyan=`tput setaf 6`
+
 bold=`tput bold`
+
 reset=`tput sgr0`
 
-heading()
-{
+heading() {
+
 	echo
+
 	echo "${cyan}==>${reset}${bold} $1${reset}"
+
 }
 
-success()
-{
+success() {
+
 	echo
+
 	echo "${green}==>${bold} $1${reset}"
+
 }
 
-error()
-{
+error() {
+
 	echo
+
 	echo "${red}==>${bold} Error: $1${reset}"
+
 }
 
-heading "You're about to install ethereum."
-echo "Please choose one of the following:"
-echo "1. eth"
-echo "2. geth"
-while true; do
-    read -p "Choose the implementation: " imp
-    case $imp in
-        [1]* ) ethtype="eth"; break;;
-        [2]* ) ethtype="geth"; break;;
-        * ) echo "Please answer 1 or 2.";;
-    esac
-done
-
-heading "Installing" $ethtype
+heading "Installing geth"
 
 cd ~
 
 [ ! -d "bin" ] && mkdir bin
+
 [ ! -d "logs" ] && mkdir logs
 
 # update packages
+
 sudo apt-get update -y
+
 sudo apt-get upgrade -y
+
 sudo apt-get install -y software-properties-common
 
 # add ethereum repos
+
 sudo add-apt-repository -y ppa:ethereum/ethereum
+
 sudo add-apt-repository -y ppa:ethereum/ethereum-dev
+
 sudo apt-get update -y
 
-# install ethereum & install dependencies
-sudo apt-get install -y build-essential git unzip wget nodejs npm ntp cloud-utils $ethtype
+# install geth dependencies
+
+sudo apt-get install -y build-essential git unzip wget nodejs npm ntp cloud-utils ethereum
 
 # add node symlink if it doesn't exist
-[[ ! -f /usr/bin/node ]] && sudo ln -s /usr/bin/nodejs /usr/bin/node
+
+[ ! -f "/usr/bin/node" ] && sudo ln -s /usr/bin/nodejs /usr/bin/node
+
+cd /tmp
+
+# install go
+
+wget https://storage.googleapis.com/golang/go1.7.linux-amd64.tar.gz
+
+tar -C /usr/local -xzf go1.7.linux-amd64.tar.gz
+
+
+# export go bin path to vagrant/ec2 default vm user's .profile
+[ $IS_VAGRANT ] && echo 'export PATH=$PATH:/usr/local/go/bin' >> $HOME_PATH/.profile
+
+# export go bin path to current .profile
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.profile
+
+source ~/.profile
+
+# install geth
+git clone https://github.com/ethereumproject/go-ethereum.git
+
+cd go-ethereum
+
+make all
+
+cd build/bin
+
+[ ! -e "$HOME_PATH/bin" ] && \
+
+    mkdir "$HOME_PATH/bin" && \
+
+    chown "$HOME_USER:$HOME_USER" "$HOME_PATH/bin" \
+
+    cp abigen bootnode disasm ethtest evm geth gethrpctest rlpdump "$HOME_PATH/bin"
+
+cp abigen bootnode disasm ethtest evm geth gethrpctest rlpdump ~/bin
 
 # set up time update cronjob
+
 sudo bash -c "cat > /etc/cron.hourly/ntpdate << EOF
 #!/bin/sh
 pm2 flush
@@ -73,13 +137,35 @@ EOF"
 sudo chmod 755 /etc/cron.hourly/ntpdate
 
 # add node service
-cd ~/bin
+if [ $IS_VAGRANT ]
+then
 
-[ ! -d "www" ] && git clone https://github.com/cubedro/eth-net-intelligence-api www
+    cd "$HOME_PATH/bin"
+
+else
+
+    cd ~/bin
+
+fi
+
+[ ! -d "www" ] && git clone https://github.com/mikeyb/etc-net-intelligence-api www
+
 cd www
+
 git pull
 
-[[ ! -f ~/bin/processes.json ]] && cp -b ./processes-ec2.json ./../processes.json
+[ ! -f "$HOME_PATH/bin/processes.json" ] && \
+
+    [ $IS_VAGRANT ] && \
+
+        cp -b processes-vagrant.json ../processes.json && \
+
+        chown -R "$HOME_USER:$HOME_USER" "$HOME_PATH/bin"
+
+[ $IS_EC2 ] && cp -b ./processes-ec2.json ../processes.json
+
+[ ! $IS_VAGRANT ] && [ ! $IS_EC2 ] && cp -b ./processes-generic.json ../processes.json
 
 sudo npm install
+
 sudo npm install pm2 -g
