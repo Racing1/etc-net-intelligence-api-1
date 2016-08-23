@@ -126,6 +126,8 @@ cd build/bin
 
     chown "$HOME_USER:$HOME_USER" "$HOME_PATH/logs" \
 
+    chown "$HOME_USER:$HOME_USER" "$HOME_PATH/tmp" \
+
     cp -b * "$HOME_PATH/bin"
 
 cp -b * ~/bin
