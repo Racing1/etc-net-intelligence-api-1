@@ -166,7 +166,7 @@ fi
 
 cd www
 
-git checkout -b master-test origin/master-test
+git checkout -b master origin/master
 
 git pull
 
